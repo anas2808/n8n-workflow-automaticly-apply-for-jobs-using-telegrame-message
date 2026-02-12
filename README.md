@@ -24,7 +24,7 @@
 # 🏗 System Architecture
 
 <div align="center">
-  <img src="assets/architecture.png" width="1000"/>
+  <img src="image.png" width="1000"/>
 </div>
 
 ---
