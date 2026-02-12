@@ -21,6 +21,16 @@
 
 ---
 
+# 🏗 System Architecture
+
+<div align="center">
+  <img src="assets/architecture.png" width="1000"/>
+</div>
+
+---
+
+---
+
 ## 🌑 What This Does
 
 ```diff
