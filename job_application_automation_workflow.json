@@ -2,135 +2,23 @@
   "nodes": [
     {
       "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {
-          "download": true
-        }
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        -16,
-        -16
-      ],
-      "id": "a4677363-596a-4be0-92a8-819d79ab3f6f",
-      "name": "Telegram Trigger",
-      "webhookId": "70ebac34-c5d9-48cd-aad6-af8eba05c3ec",
-      "credentials": {
-        "telegramApi": {
-          "id": "0AksTkGdbUR8OP4F",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "documentType": "image_url",
-        "binaryProperty": "=data",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.mistralAi",
-      "typeVersion": 1,
-      "position": [
-        448,
-        -128
-      ],
-      "id": "185d9943-419f-43f7-8f25-2383c8f2c030",
-      "name": "Extract text",
-      "credentials": {
-        "mistralCloudApi": {
-          "id": "nf1ibm3PPKQzDvZv",
-          "name": "Mistral Cloud account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $('Message a model').item.json.output[0].content[0].text.telegram_reply.message }}",
+        "text": "={{ $('AI Agent').item.json.output.telegram_reply.message }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1696,
-        -16
+        1328,
+        136
       ],
-      "id": "14b56552-990d-43d1-9881-ff40622785ee",
+      "id": "61099a1b-decc-4912-8b33-81d795e9a26d",
       "name": "Send a text message",
       "webhookId": "483f3b99-f58d-47b4-9249-1d0b4a7e4675",
       "credentials": {
         "telegramApi": {
-          "id": "0AksTkGdbUR8OP4F",
+          "id": "A3jXLiW8y07jBuoj",
           "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "blackboxai/openai/gpt-4",
-          "mode": "list",
-          "cachedResultName": "BLACKBOXAI/OPENAI/GPT-4"
-        },
-        "responses": {
-          "values": [
-            {
-              "role": "system",
-              "content": "=You are an AI job-application automation agent.\n\nYou will receive:\n- One unstructured job post text\n- A full candidate resume\n\nYour tasks:\n1. Extract job details from the job post text\n2. Generate a professional, human-written JOB APPLICATION EMAIL IN HTML FORMAT\n3. Generate a short Telegram reply message confirming the action\n4. Output ONLY valid JSON (no extra text)\n5 .my skill contain the skills related  to job post not all skills \n6.  in about me make a sentence related to the job post this should be of two pargarph 200-300 words\n\n\nSTRICT RULES:\n- Output ONLY valid JSON\n- NO markdown\n- NO explanations\n- NO comments\n- Email tone: professional, confident, polite, human\n- Avoid generic or robotic phrases\n- Email length: 120–180 words (HTML text)\n- Telegram message: short, clear, friendly\n\nHTML EMAIL RULES (MANDATORY):\n- The email.body MUST be FULL HTML (not plain <p> text only)\n- The email.about_me MUST be ( two <p> text only)\n- Use email-safe HTML layout (table or container div)\n- Use ONLY inline CSS\n- Designed layout (background, spacing, readable typography)\n-MAKE A PROFESIONAL COLURFULL DESIGNE \n- Include full signature INSIDE HTML body\n\n=====================\nCANDIDATE RESUME\n=====================\n your resume \n=====================\nJOB POST TEXT\n=====================\n{{ $json.extractedText || $('Telegram Trigger').item.json.message.text }}\n\n=====================\nOUTPUT FORMAT\n=====================\n\n{\n  \"extracted_job\": {\n    \"company\": \"\",\n    \"role\": \"\",\n    \"skills\": [],\n    \"experience\": \"\",\n    \"location\": \"\",\n    \"email\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"email\": {\n    \"to\": \"\",\n    \"subject\": \"\",\n    \"body\": \"\",\n    \"about me \": \"\",\n    \"my skills\"\n    \"signature\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"telegram_reply\": {\n    \"message\": \"\"\n  }\n}\n\nIMPORTANT:\n- email.body MUST contain a designed HTML email (not plain paragraphs)\n- \"signature\" MUST be an empty string \"\"\n- If HR email is missing, set \"email\" to \"Not found\"\n- Subject MUST include the job role\n- The email.about_me MUST be ( two <p> text only)\n\n"
-            }
-          ]
-        },
-        "simplify": false,
-        "builtInTools": {},
-        "options": {
-          "textFormat": {
-            "textOptions": {
-              "type": "json_schema",
-              "verbosity": "high",
-              "name": "=text"
-            }
-          }
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 2.1,
-      "position": [
-        704,
-        0
-      ],
-      "id": "7a57d6f8-ebf7-4d20-918d-e9ef6db3b94e",
-      "name": "Message a model",
-      "credentials": {
-        "openAiApi": {
-          "id": "lAUw3w8bNWOTUUhA",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "sendTo": "={{ $('Message a model').item.json.output[0].content[0].text.extracted_job.email }}",
-        "subject": "={{ $('Message a model').item.json.output[0].content[0].text.email.subject }}",
-        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <title>enter your name | Web Developer</title>\n    <meta charset=\"utf-8\" />\n    <meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\" />\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #333;\n            line-height: 1.6;\n        }\n        \n        .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 0 20px;\n        }\n        \n        /* Header/Hero Section */\n        .hero {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n            padding: 80px 20px;\n            text-align: center;\n        }\n        \n        .hero h1 {\n            font-size: 56px;\n            font-weight: 300;\n            margin-bottom: 10px;\n            letter-spacing: 2px;\n        }\n        \n        .hero h1 strong {\n            font-weight: 700;\n            color: #ffd700;\n        }\n        \n        .hero .subtitle {\n            font-size: 20px;\n            margin-bottom: 30px;\n            opacity: 0.95;\n        }\n        \n        .hero-image {\n            width: 200px;\n            height: 200px;\n            border-radius: 50%;\n            margin: 30px auto;\n            border: 5px solid rgba(255, 255, 255, 0.3);\n            object-fit: cover;\n            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);\n        }\n        \n        .btn {\n            display: inline-block;\n            padding: 14px 40px;\n            background: #ffd700;\n            color: #333;\n            text-decoration: none;\n            border-radius: 50px;\n            font-weight: 600;\n            transition: all 0.3s ease;\n            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);\n            margin: 10px;\n        }\n        \n        .btn:hover {\n            transform: translateY(-3px);\n            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);\n            background: #ffed4e;\n        }\n        \n        .btn-outline {\n            background: transparent;\n            color: white;\n            border: 2px solid white;\n        }\n        \n        .btn-outline:hover {\n            background: white;\n            color: #667eea;\n        }\n        \n        /* About Section */\n        .about {\n            background: white;\n            padding: 80px 20px;\n        }\n        \n        .section-title {\n            text-align: center;\n            font-size: 36px;\n            margin-bottom: 50px;\n            color: #667eea;\n            position: relative;\n            padding-bottom: 15px;\n        }\n        \n        .section-title::after {\n            content: '';\n            position: absolute;\n            bottom: 0;\n            left: 50%;\n            transform: translateX(-50%);\n            width: 80px;\n            height: 4px;\n            background: #ffd700;\n            border-radius: 2px;\n        }\n        \n        .about-content {\n            max-width: 800px;\n            margin: 0 auto;\n            text-align: center;\n        }\n        \n        .about-content p {\n            font-size: 18px;\n            margin-bottom: 20px;\n            color: #555;\n        }\n        \n        /* Projects Section */\n        .projects {\n            background: #f8f9fa;\n            padding: 80px 20px;\n        }\n        \n        .projects-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n            gap: 30px;\n            margin-top: 50px;\n        }\n        \n        .project-card {\n            background: white;\n            border-radius: 15px;\n            padding: 30px;\n            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);\n            transition: all 0.3s ease;\n            border-left: 4px solid #667eea;\n        }\n        \n        .project-card:hover {\n            transform: translateY(-10px);\n            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);\n        }\n        \n        .project-card h3 {\n            color: #667eea;\n            font-size: 24px;\n            margin-bottom: 10px;\n        }\n        \n        .project-tech {\n            color: #764ba2;\n            font-weight: 600;\n            margin-bottom: 15px;\n            font-size: 14px;\n        }\n        \n        .project-card p {\n            color: #666;\n            line-height: 1.7;\n        }\n        \n        /* Skills Section */\n        .skills {\n            background: white;\n            padding: 80px 20px;\n        }\n        \n        .skills-list {\n            display: flex;\n            flex-wrap: wrap;\n            justify-content: center;\n            gap: 15px;\n            margin-top: 40px;\n        }\n        \n        .skill-tag {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n            padding: 12px 25px;\n            border-radius: 25px;\n            font-weight: 500;\n            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);\n        }\n        \n        /* Contact Section */\n        .contact {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            padding: 80px 20px;\n            text-align: center;\n            color: white;\n        }\n        \n        .social-links {\n            align-item:center;\n            display: flex;\n            justify-content: center;\n            gap: 30px;\n            margin-top: 40px;\n            flex-wrap: wrap;\n        }\n        \n        .social-links a {\n            color: white;\n            text-decoration: none;\n            font-size: 18px;\n            padding: 12px 30px;\n            border: 2px solid white;\n            border-radius: 25px;\n            transition: all 0.3s ease;\n        }\n        \n        .social-links a:hover {\n            background: white;\n            color: #667eea;\n            transform: scale(1.05);\n        }\n        \n        /* Footer */\n        .footer {\n            background: #2d3748;\n            color: white;\n            text-align: center;\n            padding: 30px 20px;\n            font-size: 14px;\n        }\n        \n        .footer strong {\n            color: #ffd700;\n        }\n        \n        /* Responsive Design */\n        @media (max-width: 768px) {\n            .hero h1 {\n                font-size: 36px;\n            }\n            \n            .hero .subtitle {\n                font-size: 16px;\n            }\n            \n            .section-title {\n                font-size: 28px;\n            }\n            \n            .projects-grid {\n                grid-template-columns: 1fr;\n            }\n        }\n    </style>\n</head>\n<body>\n    <!-- HERO SECTION -->\n    <section class=\"hero\">\n        <div class=\"container\">\n            <h1>yourname  <strong></strong></h1>\n            <p class=\"subtitle\">Web Developer | Django | AI/ML| Agentic AI | MERN Stack</p>\n\n            <img src=\"https://anas-mansuri.lovestoblog.com/image/mypro.png\" \n                 alt=\"Mansuri Anas\" \n                 class=\"hero-image\">\n            <div>\n                <a class=\"btn\" href=\"mailto:anas2808anas@gmail.com\">Get In Touch</a>\n                <a class=\"btn btn-outline\" href=\"enter your resume link\">Download CV</a>\n            </div>\n        </div>\n    </section>\n\n    <!-- ABOUT SECTION -->\n    <section class=\"about\">\n        <div class=\"container\">\n            <h2 class=\"section-title\">About Me</h2>\n            <div class=\"about-content\">\n          {{ $('Message a model').item.json.output[0].content[0].text.email.about_me }}\n                \n            </div>\n        </div>\n    </section> \n\n    <!-- CONTACT SECTION -->\n    <section class=\"contact\">\n        <div class=\"container\">\n            <h2 class=\"section-title\" style=\"color: white;\">Let's Connect</h2>\n            <p style=\"font-size: 18px; margin-bottom: 20px;\">\n                I'm always interested in hearing about new opportunities and projects.\n            </p>\n            <div class=\"social-links\">\n                <a href=\"https://github.com/\">GitHub</a>\n                <a href=\"https://www.linkedin.com/in/\">LinkedIn</a>\n                <a href=\"mailto:enter your mail id\">Email</a>\n            </div>\n        </div>\n    </section>\n\n    <!-- FOOTER -->\n    <footer class=\"footer\">\n        <p>© 2026 <strong>Enter your name</strong></p>\n    </footer>\n</body>\n</html>",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        1488,
-        176
-      ],
-      "id": "bd60fb45-5af5-4550-bf83-1bb4a4a03e5f",
-      "name": "Send a message",
-      "webhookId": "4ca84193-364b-4d88-83bc-36a2ad5ce0ee",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "J4OEhAhpaNHxd9s0",
-          "name": "Gmail account"
         }
       }
     },
@@ -154,20 +42,31 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Email ": "={{ $json.output[0].content[0].text.email.to }}",
-            "subject ": "={{ $json.output[0].content[0].text.email.subject }}",
-            "company name": "={{ $json.output[0].content[0].text.extracted_job.company }}",
-            "time": "={{ $now.format('D HH:mm:ss') }}",
-            "id ": "=",
-            "status": "=applyed"
+            "id": "=",
+            "Email": "={{ $('AI Agent').item.json.output.email.to }}",
+            "role": "={{ $('AI Agent').item.json.output.extracted_job.role }}",
+            "subject": "={{ $('AI Agent').item.json.output.email.subject }}",
+            "email body": "={{ $('AI Agent').item.json.output.email.body }}",
+            "status": "applied",
+            "time": "={{$now}}"
           },
           "matchingColumns": [
             "id"
           ],
           "schema": [
             {
-              "id": "id ",
-              "displayName": "id ",
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -176,8 +75,8 @@
               "removed": false
             },
             {
-              "id": "Email ",
-              "displayName": "Email ",
+              "id": "role",
+              "displayName": "role",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -186,8 +85,8 @@
               "removed": false
             },
             {
-              "id": "company name",
-              "displayName": "company name",
+              "id": "subject",
+              "displayName": "subject",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -196,18 +95,8 @@
               "removed": false
             },
             {
-              "id": "subject ",
-              "displayName": "subject ",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "email body ",
-              "displayName": "email body ",
+              "id": "email body",
+              "displayName": "email body",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -244,15 +133,46 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1296,
-        176
+        1104,
+        64
       ],
-      "id": "603eb6e0-9b58-420a-b71d-32d6a3c1d0db",
+      "id": "c7c921a5-387e-4441-9fd6-8b4285fc0643",
       "name": "Append row in sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "cUjkrChwRvwqpc6g",
+          "id": "RRvQ5pxlbgThJCYS",
           "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.output.email.to }}",
+        "subject": "={{ $('AI Agent').item.json.output.email.subject }}",
+        "emailType": "text",
+        "message": "={{ $('AI Agent').item.json.output.email.body }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        64
+      ],
+      "id": "608c17b3-154e-4f2e-b6a7-dcd13ea8a034",
+      "name": "Send a message",
+      "webhookId": "4ca84193-364b-4d88-83bc-36a2ad5ce0ee",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vG9pnnjBkDQDYmns",
+          "name": "Gmail account"
         }
       }
     },
@@ -284,11 +204,135 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        192,
-        -16
+        -368,
+        136
       ],
-      "id": "4b243a15-f6e0-41c6-929a-c655b9d73ba7",
+      "id": "57f1e591-ebcf-4160-9269-c38526a299a4",
       "name": "If"
+    },
+    {
+      "parameters": {
+        "documentType": "image_url",
+        "binaryProperty": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        64
+      ],
+      "id": "e402a325-da14-4509-915c-a368fe830456",
+      "name": "Extract text",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "l8MrKA4lS8zWnpm0",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        136
+      ],
+      "id": "81b9044f-1e89-499a-bc15-312bb21b933e",
+      "name": "Telegram Trigger",
+      "webhookId": "70ebac34-c5d9-48cd-aad6-af8eba05c3ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "A3jXLiW8y07jBuoj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI job application assistant.\n\nYou will receive:\n1. A job post\n2. A candidate resume\n\nYour tasks:\n1. Extract important job details\n2. Generate a professional plain-text job application email\n3. Generate a short Telegram confirmation message\n4. Return ONLY valid JSON\n\nRULES:\n- Output ONLY valid JSON\n- No markdown\n- No explanations\n- No comments\n- Email tone must be professional, confident, and human\n- Avoid robotic or generic wording\n- Email length: 250-300 words\n- Telegram message should be short and clear\n- \"my_skills\" must contain ONLY skills relevant to the job post\n- \"about_me\" should contain 2 short paragraphs related to the job role\n- If HR email is missing, set email to \"Not found\"\n- Keep signature empty: \"\"\n```text id=\"m1j8jb\"\n\n\nEMAIL BODY RULES:\n- body must be plain text only\n- Do NOT generate HTML\n- Use proper line breaks with \\n\n- Keep professional email structure\n- Format like a real human-written email\n- Use short paragraphs\n- Include greeting, introduction, skills relevance, closing, and signature\n- Do NOT use markdown\n- Do NOT use bullet points\n- Keep it readable in Gmail and Outlook\n```\n\n\n=====================\nCANDIDATE RESUME\n=====================\n\nANAS MANSURI\nanas2808anas@gmail.com | 7990238770 | github.com/anas2808| anas-mansuri.infinityfree.me| Ahmedabad, Gujarat, India\nEDUCATION\nLJ Institute of Computer Applications Ahmedabad, Gujarat\nMaster of Computer Applications (MCA) 2025 – 2027\nLJ Institute of Computer Applications Ahmedabad, Gujarat\nBachelor of Computer Applications (BCA) 2022 – 2025\nCGPA: 7.08\nTECHNICAL SKILLS\nProgramming Languages: Python, Java, C, PHP, JavaScript, Kotlin\nFrameworks & Libraries: Django, Laravel, React, React Native, MERN Stack\nFrontend Technologies: HTML, CSS, Bootstrap\nDatabases: MySQL, SQLite, MongoDB\nTools & Platforms: WordPress, Android Studio, Git, GitHub, Jira, n8n Automation, Figma\nOther Skills: UI/UX Design, Web Scraping, API Integration, Automation Workflows, AI/ML Basics\nPROFESSIONAL EXPERIENCE\nAspiration Softech, Jan 2025 – June 2025\nWordPress Developer\n• Developed responsive and SEO-optimized WordPress websites for clients\n• Customized themes and plugins to meet individual client requirements\n• Implemented custom UI designs and learned LMS and e-commerce systems\n• Gained hands-on experience delivering real client projects over 6 months\nCognifyz Technologies, Feb 2025\nPython Developer Intern\n• Completed multiple Python-based tasks and mini-projects during 1-month internship\n• Developed a small game using Python and implemented basic web scraping techniques\n• Gained practical exposure to professional software development workflows\nPROJECTS\nQuickTrade Marketplace https://github.com/anas2808/Quick-Trade.git\nTechnologies: Python, Django, HTML, CSS, JavaScript, Bootstrap, SQL\n• OLX-like marketplace where users can buy and sell products with full authentication\n• Features include product search and filters, real-time chat system, advertisement auto-expiry\n• Custom admin panel, profile management, ad editing, and fully mobile-responsive design\nMobHub – Mobile Phone Store https://github.com/anas2808/mobhub.git\nTechnologies: Python, Django, HTML, CSS, JavaScript, Bootstrap, SQL\n• E-commerce platform for purchasing mobile phones with product listing and category-based browsing\n• User authentication and streamlined checkout experience\nWrist Gem – Watch Selling Website https://github.com/anas2808/wrist-gem.git\nTechnologies: Laravel, PHP, SQL, HTML, CSS, JavaScript, Bootstrap\n• Online watch store with login/logout, checkout system, and admin-side product and order management\nSave for Later – Bookmark Android App\nTechnologies: Android Studio, Kotlin, Firebase\n• Android app to save and manage bookmarks with automatic tag identification from pasted links\n• Intelligently categorizes bookmarks for improved organization\nAutomation Projects https://anas-mansuri.infinityfree.me/job-automation.html\n• Built an n8n automation that analyzes job posts received on Telegram and automatically applies via email or WhatsApp\n• Developed a GitHub automation committing a daily task automatically to maintain repository consistency\nCERTIFICATIONS\nGoogle UX Design Professional Certificate November 2024\nGoogle (Coursera) — Foundations of UX Design, UX Research and Testing, Wireframing and Prototyping, High-Fidelity Design in\nFigma, UI Design for Websites\nAutomate Tasks and Processes with Jira 2025\nCoursera Project Network\nFake News Detection with Machine Learning 2025\nCoursera Project Network \n=====================\nJOB POST\n=====================\n\n{{ $json.extractedText || $('Telegram Trigger').item.json.message.text }}\n\n=====================\nOUTPUT FORMAT\n=====================\n\n{\n  \"extracted_job\": {\n    \"company\": \"\",\n    \"role\": \"\",\n    \"skills\": [],\n    \"experience\": \"\",\n    \"location\": \"\",\n    \"email\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"email\": {\n    \"to\": \"\",\n    \"subject\": \"\",\n    \"body\": \"\",\n    \"my_skills\": \"\",\n    \"signature\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"telegram_reply\": {\n    \"message\": \"\"\n  }\n}\n\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a JSON API.\n\nReturn ONLY valid minified JSON.\n\nDo not use markdown.\nDo not wrap in ```json.\nDo not explain anything.\nDo not add extra fields.\nDo not change field names.\nDo not add comments.\nDo not escape unnecessary characters.\n\nSTRICT OUTPUT FORMAT:\n\n{\n\"company\":\"\",\n\"role\":\"\",\n\"skills\":[],\n\"experience\":\"\",\n\"location\":\"\",\n\"email\":\"\",\n\"phone_number\":\"\",\n\"subject\":\"\",\n\"body\":\"\",\n\"telegram_message\":\"\"\n}\n\nRULES:\n\n* body must be plain text email\n* no HTML\n* no markdown\n* no placeholders\n* no \\n escaping except actual line breaks\n* always return all fields\n* if unknown use empty string\n* skills must always be array\n* telegram_message must be short\n\nGenerate professional concise output.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        80,
+        136
+      ],
+      "id": "c15c925a-3e77-4eea-88ce-f3240abc1cf2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        88,
+        360
+      ],
+      "id": "de194f8d-8cbb-4eec-90cf-c939edb8b7c3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "EQDiNK4hzynVsp76",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"extracted_job\": {\n    \"company\": \"\",\n    \"role\": \"\",\n    \"skills\": [],\n    \"experience\": \"\",\n    \"location\": \"\",\n    \"email\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"email\": {\n    \"to\": \"\",\n    \"subject\": \"\",\n    \"body\": \"\",\n    \"my_skills\": \"\",\n    \"signature\": \"\",\n    \"phone_number\": \"\"\n  },\n  \"telegram_reply\": {\n    \"message\": \"\"\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        216,
+        360
+      ],
+      "id": "ce6bebc0-00e7-4e38-b605-2cf65143da74",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1KBJEVO1cgycWrwtdEQlZZPnZPeDXf1HC",
+          "mode": "list",
+          "cachedResultName": "Anas_Mansuri_Resume.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1KBJEVO1cgycWrwtdEQlZZPnZPeDXf1HC/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        656,
+        64
+      ],
+      "id": "6521d137-7cf2-4d43-9f7f-75b55940757e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "GELFmYR4LcrFj14E",
+          "name": "Google Drive account"
+        }
+      }
     },
     {
       "parameters": {
@@ -302,11 +346,11 @@
           "conditions": [
             {
               "id": "dddb69f6-8647-4e2c-8d80-f6cf0976a7d4",
-              "leftValue": "={{ $json.output[0].content[0].text.extracted_job.email }}",
+              "leftValue": "={{ $json.output.extracted_job.email }}",
               "rightValue": "Not found",
               "operator": {
                 "type": "string",
-                "operation": "equals"
+                "operation": "notEquals"
               }
             }
           ],
@@ -317,48 +361,15 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1072,
-        0
+        432,
+        136
       ],
-      "id": "379763d7-53af-4006-a274-13a79ee79fb2",
+      "id": "371f533f-df8e-470b-bce3-3c614f0ce60c",
       "name": "If1"
     }
   ],
   "connections": {
-    "Telegram Trigger": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract text": {
-      "main": [
-        [
-          {
-            "node": "Message a model",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Message a model": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send a message": {
+    "Append row in sheet": {
       "main": [
         [
           {
@@ -369,11 +380,11 @@
         ]
       ]
     },
-    "Append row in sheet": {
+    "Send a message": {
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Append row in sheet",
             "type": "main",
             "index": 0
           }
@@ -391,7 +402,73 @@
         ],
         [
           {
-            "node": "Message a model",
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -402,14 +479,14 @@
       "main": [
         [
           {
-            "node": "Send a text message",
+            "node": "Download file",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Append row in sheet",
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -420,6 +497,6 @@
   "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "ef74939de690a94acf41eb6c397a22e4807cfdf738fdba95130e6d030e98f702"
+    "instanceId": "1dc0bcda24893f0bf5c66c0f404f223d7c05610325476110cb81c129c0d43e2b"
   }
 }
